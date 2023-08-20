@@ -13,7 +13,7 @@ public class CSVManager {
         try {
             File file = new File(dir);
             file.createNewFile();
-            System.out.println("Archivo CSV creado: " + dir);
+            System.out.println("Archivo creado: " + dir);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,7 +55,7 @@ public class CSVManager {
                 bufferedWriter.newLine();
 
                 bufferedWriter.close();
-                System.out.println("Línea agregada al archivo CSV: " + line);
+                System.out.println("Línea agregada al archivo: " + line);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -70,7 +70,7 @@ public class CSVManager {
                 bufferedWriter.newLine();
 
                 bufferedWriter.close();
-                System.out.println("Línea agregada al archivo CSV: " + line);
+                System.out.println("Línea agregada al archivo: " + line);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -81,12 +81,12 @@ public class CSVManager {
         File file = new File(dir);
         if (file.exists()) {
             if (file.delete()) {
-                System.out.println("Archivo CSV eliminado: " + dir);
+                System.out.println("Archivo eliminado: " + dir);
             } else {
-                System.out.println("Error al eliminar el archivo CSV: " + dir);
+                System.out.println("Error al eliminar el archivo: " + dir);
             }
         } else {
-            System.out.println("El archivo CSV no existe: " + dir);
+            System.out.println("El archivo no existe: " + dir);
         }
     }
 
@@ -96,7 +96,7 @@ public class CSVManager {
             if (line >= 1 && line <= lines.size()) {
                 lines.remove(line - 1);
                 Files.write(Path.of(dir), lines, StandardCharsets.UTF_8);
-                System.out.println("Línea eliminada del archivo CSV: " + line);
+                System.out.println("Línea eliminada del archivo: " + line);
             } else {
                 System.out.println("El número de línea es inválido: " + line);
             }
@@ -111,9 +111,9 @@ public class CSVManager {
             if (!lines.isEmpty()) {
                 lines.remove(lines.size() - 1);
                 Files.write(Path.of(dir), lines, StandardCharsets.UTF_8);
-                System.out.println("Última línea eliminada del archivo CSV.");
+                System.out.println("Última línea eliminada del archivo.");
             } else {
-                System.out.println("El archivo CSV está vacío.");
+                System.out.println("El archivo está vacío.");
             }
         } catch (IOException e) {
             e.printStackTrace();
