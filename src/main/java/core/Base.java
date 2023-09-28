@@ -104,7 +104,7 @@ public class Base {
         Base.startAt = startAt;
     }
 
-    private static JSONObject buscarJQL(String jql){
+    public static JSONObject buscarJQL(String jql){
         String urlGET = Constants.METODO_SEARCH + "jql=" + limpiarJql(jql);
         if (fields != null){
             urlGET += "&fields=" + fields;
@@ -123,6 +123,11 @@ public class Base {
     private static String limpiarJql(String jql){
         String newJql = jql.replaceAll(" ","%20");
         newJql = newJql.replaceAll("=","%3D");
+        newJql = newJql.replaceAll("\\(","%28");
+        newJql = newJql.replaceAll("\\)","%29");
+        newJql = newJql.replaceAll("Ó","%C3%93");
+        newJql = newJql.replaceAll(",","%2C");
+        newJql = newJql.replaceAll("\"","%22");
         return newJql;
     }
 

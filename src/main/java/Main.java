@@ -12,7 +12,7 @@ public class Main {
         HashMap<String, Float> horasRefactorizando = new HashMap<String, Float>();
 
         CSVManager csvManager = new CSVManager();
-        String csvDir = System.getProperty("user.home") + "\\Documents\\MetricasAutomatizacion\\metricasPRUEBA.xls";
+        String csvDir = System.getProperty("user.home") + "\\Documents\\MetricasAutomatizacion\\metricas_25-08-2023.xls";
         csvManager.deleteFile(csvDir);
         csvManager.createCSV(csvDir);
         csvManager.addLine(csvDir,"automatizador;casosTotales;hhTotalesAutomatizando;hhPromedioAutomatizando;hhTotalesRefactorizando;hhPromedioRefactorizando");
