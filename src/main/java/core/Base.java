@@ -4,13 +4,19 @@ import constants.Constants;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import static constants.Constants.FECHA;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
@@ -59,29 +65,128 @@ public class Base {
         Base.setFields("status,statuscategorychangedate");
 
         // Variables
-
         HashMap<String, Float> horas = new HashMap<String, Float>();
-
         List<String> changeList = Base.obtenerEstadosDesdeJQL(jql);
-
-        Base.filtrarListaPorEstado(changeList, estado);
-        Base.limpiarFecha(changeList);
-
+        
         float horasTotales = 0;
+        int tiempoMaximo = 0;
+        int tiempoMinimo = 1000;
 
-        for (int i = 1;i<changeList.size();i++){
-            String fechaInicio = changeList.get(i).split(",")[1];
-            String fechaFin = changeList.get(i-1).split(",")[1];
-            horasTotales += calcularHorasLaborales(fechaInicio,fechaFin);
-            i++;
+        // Limpiar lista
+        Base.filtrarListaPorEstado(changeList, estado); // Deja solo trancisiones con el estado dado
+        Base.limpiarFecha(changeList); // Se limpia formato de la fecha
+        for (String string : changeList) {
+            System.out.println(string);
+        }
+        if (changeList.isEmpty()) {
+            horas.put("horasTotales", 0f);
+            horas.put("horasPromedio", 0f);
+            horas.put("tiempoMaximo", 0f);
+            horas.put("tiempoMinimo", 0f);
+            horas.put("totalIssuesRef", 0f);
+            horas.put("totalIssuesAut", 0f);
+            return horas;
         }
 
-        horas.put("horasTotales",horasTotales);
-        horas.put("horasPromedio",horasTotales/Base.getTotalIssues());
-        horas.put("totalIssues", (float) getTotalIssues());
+        // Dividir changeList a una matriz para recorrer cada QA-XXXX Individualmente y no se sobrelapen
+        List<List<String>> changeListCube = new ArrayList<>();
+        List<String> idGroup = new ArrayList<>();
+        String auxId = changeList.get(0).split(",")[0];
+        for(int i = 0;i<changeList.size();i++){
+            String id = changeList.get(i).split(",")[0];
+            if (auxId.equals(id)) {
+                if (isAfterDate(changeList.get(i).split(",")[1], Constants.FECHA)) {
+                    idGroup.add(changeList.get(i));
+                }
+            }
+            else{
+                idGroup.sort(new Comparator<String>() {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
+                    @Override
+                    public int compare(String o1, String o2) {
+                        String date1 = o1.split(",")[1];
+                        String date2 = o2.split(",")[1];
+                        try {
+                            return dateFormat.parse(date1).compareTo(dateFormat.parse(date2));
+                        } catch (ParseException e) {
+                            throw new IllegalArgumentException(e);
+                        }
+                    }
+                });
+                changeListCube.add(new ArrayList<>(idGroup));
+                idGroup.clear();
+                auxId = changeList.get(i).split(",")[0];
+                i--;
+            }
+        }
+
+        // Se recorre el changeListCube organizado en el paso anterior
+        for(int i=0;i<changeListCube.size();i++){
+            for(int j=1;j<changeListCube.get(i).size();j++){
+                String fechaInicio = changeListCube.get(i).get(j-1).split(",")[1];
+                String fechaFin = changeListCube.get(i).get(j).split(",")[1];
+                //System.out.println(changeListCube.get(i).get(j-1) + " Horas totales: " + calcularHorasLaborales(fechaInicio, ferchaFin) + " Cantidad de trancisiones: " + changeListCube.get(i).size());
+                //System.out.println(changeListCube.get(i).get(j) + " Horas totales: " + calcularHorasLaborales(fechaInicio, ferchaFin) + " Cantidad de trancisiones: " + changeListCube.get(i).size());
+                System.out.println("Id: "+ changeListCube.get(i).get(j-1).split(",")[0] + " Trancición: " + changeListCube.get(i).get(j-1).split(",")[3] + " --> " + changeListCube.get(i).get(j-1).split(",")[4] + " Fecha: " + fechaInicio);
+                System.out.println("Id: "+ changeListCube.get(i).get(j).split(",")[0] + " Trancición: " + changeListCube.get(i).get(j).split(",")[3] + " --> " + changeListCube.get(i).get(j).split(",")[4] + " Fecha: " + fechaFin);
+
+                int tiempo = calcularHorasLaborales(fechaInicio,fechaFin);
+                horasTotales += tiempo;
+                if (tiempo>tiempoMaximo) {
+                    tiempoMaximo=tiempo;
+                }
+                if (tiempo<tiempoMinimo) {
+                    tiempoMinimo=tiempo;
+                }
+                System.out.println("Horas Totales: " + tiempo);
+                j++;
+            }
+            System.out.println("----------------------------------------");
+        }
+
+        // TODO: Verificar cuantas horas se están obteniendo, si se obtienen mas de 15000, pasar parametrización en donde se indique la fecha.
+
+        horas.put("horasTotales",horasTotales);
+        //horas.put("horasPromedio",horasTotales/Base.getTotalIssues());
+        horas.put("horasPromedio",horasTotales/changeListCube.size());
+        if (estado.equals("EN PROCESO DE AUTOMATIZACIÓN")) {
+            horas.put("totalIssuesAut", (float) changeListCube.size() + 1);
+        }
+        if (estado.equals("REFACTORIZACIÓN")) {
+            horas.put("totalIssuesRef", (float) changeListCube.size() + 1);
+        }
+        horas.put("tiempoMaximo", (float) tiempoMaximo);
+        horas.put("tiempoMinimo", (float) tiempoMinimo);
 
         return horas;
+    }
+    
+    
+    
+
+    private static Boolean isAfterDate(String modified, String after){
+        // Formato de la fecha y hora para el string 'modified'
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        LocalDateTime modifiedDateTime = LocalDateTime.parse(modified, dateTimeFormatter);
+
+        // Formato de la fecha para el string 'after'
+        LocalDate afterDate = LocalDate.parse(after);
+
+        // Comparación de las fechas
+        return modifiedDateTime.isAfter(afterDate.atStartOfDay());
+    }
+
+    private static Boolean isBeforeDate(String modified, String before){
+        // Formato de la fecha y hora para el string 'modified'
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        LocalDateTime modifiedDateTime = LocalDateTime.parse(modified, dateTimeFormatter);
+
+        // Formato de la fecha para el string 'after'
+        LocalDate afterDate = LocalDate.parse(before);
+
+        // Comparación de las fechas
+        return modifiedDateTime.isBefore(afterDate.atStartOfDay());
     }
 
     private static void setTotalIssues(int totalIssues) {
@@ -227,11 +332,11 @@ public class Base {
         LocalDateTime fin = LocalDateTime.parse(fecha2);
 
         // Redondear fecha inicio
-        inicio = inicio.plus(inicio.getMinute()*-1, ChronoUnit.MINUTES);
-        inicio = inicio.plus(inicio.getSecond()*-1,ChronoUnit.SECONDS);
+        //inicio = inicio.plus(inicio.getMinute()*-1, ChronoUnit.MINUTES);
+        //inicio = inicio.plus(inicio.getSecond()*-1,ChronoUnit.SECONDS);
         // Redondear fecha fin
-        fin = fin.plus(60-fin.getMinute(),ChronoUnit.MINUTES);
-        fin = fin.plus(fin.getSecond()*-1,ChronoUnit.SECONDS);
+        //fin = fin.plus(60-fin.getMinute(),ChronoUnit.MINUTES);
+        //fin = fin.plus(fin.getSecond()*-1,ChronoUnit.SECONDS);
 
 
         int horasLaborales = 0;

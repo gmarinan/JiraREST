@@ -12,21 +12,22 @@ public class Main {
         HashMap<String, Float> horasRefactorizando = new HashMap<String, Float>();
 
         CSVManager csvManager = new CSVManager();
-        String csvDir = System.getProperty("user.home") + "\\Documents\\MetricasAutomatizacion\\metricas_25-08-2023.xls";
+        String csvDir = System.getProperty("user.home") + "\\Documents\\MetricasAutomatizacion\\metricas_07-07-2024.csv";
         csvManager.deleteFile(csvDir);
         csvManager.createCSV(csvDir);
-        csvManager.addLine(csvDir,"automatizador;casosTotales;hhTotalesAutomatizando;hhPromedioAutomatizando;hhTotalesRefactorizando;hhPromedioRefactorizando");
+        csvManager.addLine(csvDir,"automatizador;casosTotalesAut;hhTotalesAutomatizando;hhPromedioAutomatizando;casosTotalesRef;hhTotalesRefactorizando;hhPromedioRefactorizando;tiempoMaximo;tiempoMinimo");
 
         for (Automatizadores automatizador: Automatizadores.values()){
             System.out.println(automatizador.getNombre());
             horasEnProceso = Base.cantidadDeHHEnEstado(automatizador.getJql(),"EN PROCESO DE AUTOMATIZACIÓN");
             horasRefactorizando = Base.cantidadDeHHEnEstado(automatizador.getJql(),"REFACTORIZACIÓN");
-            csvManager.addLine(csvDir,automatizador.getNombre() + ";" + horasEnProceso.get("totalIssues").intValue() + ";"
+            csvManager.addLine(csvDir,automatizador.getNombre() + ";" + horasEnProceso.get("totalIssuesAut").intValue() + ";"
                     + horasEnProceso.get("horasTotales").intValue() + ";" + horasEnProceso.get("horasPromedio").toString().replaceAll("\\.",",") + ";"
-                    + horasRefactorizando.get("horasTotales").intValue() + ";" + horasRefactorizando.get("horasPromedio").toString().replaceAll("\\.",","));
+                    + horasRefactorizando.get("totalIssuesRef").intValue() + ";" + horasRefactorizando.get("horasTotales").intValue() + ";" 
+                    + horasRefactorizando.get("horasPromedio").toString().replaceAll("\\.",",") + ";"
+                    + horasEnProceso.get("tiempoMaximo") + ";" + horasEnProceso.get("tiempoMinimo"));
 
         }
-
     }
 
 
