@@ -2,6 +2,7 @@ package core;
 
 import constants.Constants;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import static constants.Constants.FECHA;
@@ -56,6 +57,61 @@ public class Base {
     public static int getTotalIssues() {
         return totalIssues;
     }
+
+    /**
+     * Analiza el día actual ejecutando una consulta JQL en Jira.
+     * La consulta JQL debe estar acotada a un tipo de issue específico (`issuetype`).
+     * Cuenta la cantidad de issues en cada estado y los agrega a un archivo CSV fijo.
+     * Si el método se ejecuta otro día, los resultados se concatenan al CSV existente.
+     *
+     * @param jql La consulta JQL que se ejecutará en Jira, la cual debe incluir una restricción para el `issuetype`.
+     * @param csvDir La ruta del archivo CSV donde se almacenarán los resultados.
+     * @throws IOException Si ocurre un error al escribir en el archivo CSV.
+     * @throws JiraException Si hay un problema con la ejecución de la query en Jira.
+     */
+    public static Map<String, Integer> analyzeDay(String jql, String csvDir) {
+        // Initialize query parameters
+        int startAt = 0;
+        int maxResults = 100;
+        int total = 0;
+    
+        Map<String, Integer> cuentaEstados = new HashMap<>();
+    
+        try{
+            do {
+                // Set the pagination parameters for each request
+                Base.setStartAt(String.valueOf(startAt));
+                Base.setMaxResults(String.valueOf(maxResults));
+                Base.setFields("status");
+        
+                // Perform the JQL search
+                JSONObject respuesta = Base.buscarJQL(jql);
+                total = respuesta.getInt("total");
+        
+                System.out.println("Processing issues from index: " + startAt + " - Total issues: " + total);
+        
+                JSONArray issues = respuesta.getJSONArray("issues");
+                for (int index = 0; index < issues.length(); index++) {
+                    JSONObject issue = issues.getJSONObject(index);
+                    String estado = issue.getJSONObject("fields").getJSONObject("status").getString("name");
+                    cuentaEstados.put(estado, cuentaEstados.getOrDefault(estado, 0) + 1);
+                }
+                // Update startAt for the next iteration
+                startAt += issues.length();
+        
+            } while (startAt < total);
+        }
+         catch (JSONException e) {
+            System.err.println("Error al procesar el JSON: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Ha ocurrido un error inesperado: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return cuentaEstados;
+    }
+
+
 
     public static HashMap<String, Float> cantidadDeHHEnEstado(String jql, String estado){
         // Reiniciar estadisticas

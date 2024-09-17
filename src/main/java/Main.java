@@ -8,6 +8,13 @@ public class Main {
     public static int MAX_RESULTS = 100;
     public static void main(String[] args) {
 
+        Base.analyzeDay("project = QA and issueType = Test", null);
+
+
+
+        
+    }
+    public void metodoAntiguo(){
         HashMap<String, Float> horasEnProceso = new HashMap<String, Float>();
         HashMap<String, Float> horasRefactorizando = new HashMap<String, Float>();
 
@@ -29,6 +36,4 @@ public class Main {
 
         }
     }
-
-
 }

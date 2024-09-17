@@ -8,8 +8,8 @@ public class Constants {
     public static final String HOST = configReader.getProperty("host");
     public static final String AUTHORIZATION = configReader.getProperty("authorization");
     public static final String METODO_SEARCH = HOST + "/rest/api/3/search?";
-    public static final String FECHA = "2024-07-01";
-    public static final String FECHA_FIN = "2024-07-09";
+    public static final String FECHA = "2024-07-22";
+    public static final String FECHA_FIN = "2024-07-18";
     public static final String JQL_AUT_1 = "project = QA AND issuetype = Test AND assignee = 6317ac8262fe1e6eac6da1ea AND STATUS Changed AFTER '" + FECHA + "'";
     public static final String JQL_AUT_2 = "project = QA AND issuetype = Test AND assignee = \"712020:363f9a20-686c-4e59-9477-e0f99e4a7f3e\" AND STATUS Changed AFTER '" + FECHA + "'";
     public static final String JQL_AUT_3 = "project = QA AND issuetype = Test AND assignee = 622b63824160640069cb7aa4 AND STATUS Changed AFTER '" + FECHA + "'";

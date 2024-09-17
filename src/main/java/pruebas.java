@@ -6,9 +6,9 @@ import java.util.HashMap;
 public class pruebas {
     public static void main(String[] args) {
 
-        String jql = "project = QA AND issuetype = Test AND assignee = 622b636b6a4c4c0070b2d021 AND STATUS Changed AFTER '2024-01-01'";
+        String jql = "project = EM AND issuetype = Automatización AND assignee = 6317ac8262fe1e6eac6da1ea and Sprint = 1217";
 
-        String enProceso = "EN PROCESO DE AUTOMATIZACIÓN";
+        String enProceso = "EN CURSO";
         String refactor = "REFACTORIZACIÓN";
 
         System.out.println(jql);
