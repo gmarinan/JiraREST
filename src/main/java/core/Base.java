@@ -5,7 +5,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static constants.Constants.FECHA;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -201,7 +200,6 @@ public class Base {
             System.out.println("----------------------------------------");
         }
 
-        // TODO: Verificar cuantas horas se están obteniendo, si se obtienen mas de 15000, pasar parametrización en donde se indique la fecha.
 
         horas.put("horasTotales",horasTotales);
         //horas.put("horasPromedio",horasTotales/Base.getTotalIssues());
@@ -233,6 +231,7 @@ public class Base {
         return modifiedDateTime.isAfter(afterDate.atStartOfDay());
     }
 
+    @SuppressWarnings("unused")
     private static Boolean isBeforeDate(String modified, String before){
         // Formato de la fecha y hora para el string 'modified'
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;

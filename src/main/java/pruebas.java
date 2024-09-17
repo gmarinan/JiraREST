@@ -1,4 +1,3 @@
-import constants.Automatizadores;
 import core.Base;
 
 import java.util.HashMap;
@@ -9,7 +8,6 @@ public class pruebas {
         String jql = "project = EM AND issuetype = Automatización AND assignee = 6317ac8262fe1e6eac6da1ea and Sprint = 1217";
 
         String enProceso = "EN CURSO";
-        String refactor = "REFACTORIZACIÓN";
 
         System.out.println(jql);
         HashMap<String,Float> result;

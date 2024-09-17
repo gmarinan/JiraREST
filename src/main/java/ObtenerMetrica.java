@@ -28,7 +28,6 @@ public class ObtenerMetrica {
         
 
         for(int i=0;i<fechas.length;i++){   
-            String lineaDesarrollo_proyecto = "";
             String fecha = fechas[i];
             String jqlTodos = "project = QA AND \"Linea de Desarrollo[Dropdown]\" = \"Equipo Medbenefit\" AND issuetype = Test AND status IN (\"AUTOMATIZADO\", \"BACKLOG AUTOMATIZACIÓN\", \"EN PROCESO DE AUTOMATIZACIÓN\", \"BLOQUEADO\", \"REFACTORIZACIÓN\") AND status WAS IN (\"AUTOMATIZADO\", \"BACKLOG AUTOMATIZACIÓN\", \"EN PROCESO DE AUTOMATIZACIÓN\", \"BLOQUEADO\", \"REFACTORIZACIÓN\", \"EN PROCESO REFACTORIZACIÓN\") ON "+ fecha;
             String jqlAutomatizados = "project = QA AND \"Linea de Desarrollo[Dropdown]\" = \"Equipo Medbenefit\" AND STATUS = \"AUTOMATIZADO\" AND issuetype = Test AND status IN (\"AUTOMATIZADO\", \"BACKLOG AUTOMATIZACIÓN\", \"EN PROCESO DE AUTOMATIZACIÓN\", \"BLOQUEADO\", \"REFACTORIZACIÓN\") AND status WAS IN (\"AUTOMATIZADO\", \"BACKLOG AUTOMATIZACIÓN\", \"EN PROCESO DE AUTOMATIZACIÓN\", \"BLOQUEADO\", \"REFACTORIZACIÓN\") ON "+ fecha;
