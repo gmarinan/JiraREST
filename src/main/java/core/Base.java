@@ -60,15 +60,13 @@ public class Base {
     /**
      * Analiza el día actual ejecutando una consulta JQL en Jira.
      * La consulta JQL debe estar acotada a un tipo de issue específico (`issuetype`).
-     * Cuenta la cantidad de issues en cada estado y los agrega a un archivo CSV fijo.
-     * Si el método se ejecuta otro día, los resultados se concatenan al CSV existente.
+     * Cuenta la cantidad de issues en cada estado y los agrupa en un map <String,Integer>
      *
      * @param jql La consulta JQL que se ejecutará en Jira, la cual debe incluir una restricción para el `issuetype`.
-     * @param csvDir La ruta del archivo CSV donde se almacenarán los resultados.
-     * @throws IOException Si ocurre un error al escribir en el archivo CSV.
-     * @throws JiraException Si hay un problema con la ejecución de la query en Jira.
+     * @throws JSONException Si hay un problema con el procesamiento del JSON, posible error con la api de jira.
+     * @throws Exception error inesperado.
      */
-    public static Map<String, Integer> analyzeDay(String jql, String csvDir) {
+    public static Map<String, Integer> analyzeDay(String jql) {
         // Initialize query parameters
         int startAt = 0;
         int maxResults = 100;

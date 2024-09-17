@@ -8,7 +8,7 @@ public class Main {
     public static int MAX_RESULTS = 100;
     public static void main(String[] args) {
 
-        Base.analyzeDay("project = QA and issueType = Test", null);
+        Base.analyzeDay("project = QA and issueType = Test");
 
 
 
